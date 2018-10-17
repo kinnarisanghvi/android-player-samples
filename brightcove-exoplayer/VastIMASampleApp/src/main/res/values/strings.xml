@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Application name -->
+    <string name="app_name">Vast IMA Sample App</string>
+    <string name="account_id">3636334163001</string>
+    <string name="policy_key">BCpkADawqM2NZcfpTGYMHaafJU597X9J0XTvw8CXZcMITep7BFNYHFKGz3XJQfYzudYCp9GWn3u18OQdlqJxSKFrIipF4Ndx9umqQ5EtUaAn_oTXaQgIs1lAe4-FciLISBFDCTAA3j2qALp8</string>
+
+    <!-- A sample Brightcove Edge Account ID -->
+    <string name="account">3636334163001</string>
+
+    <!-- A sample Brightcove Edge Policy Key -->
+    <string name="policy">BCpkADawqM2NZcfpTGYMHaafJU597X9J0XTvw8CXZcMITep7BFNYHFKGz3XJQfYzudYCp9GWn3u18OQdlqJxSKFrIipF4Ndx9umqQ5EtUaAn_oTXaQgIs1lAe4-FciLISBFDCTAA3j2qALp8</string>
+
+    <!-- A sample Brightcove Video ID -->
+    <string name="videoId">3931042146001</string>
+
+</resources>
