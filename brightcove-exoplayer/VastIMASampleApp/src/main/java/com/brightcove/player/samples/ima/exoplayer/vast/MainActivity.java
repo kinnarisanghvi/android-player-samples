@@ -58,6 +58,21 @@ public class MainActivity extends BrightcovePlayer {
         super.onCreate(savedInstanceState);
         eventEmitter = brightcoveVideoView.getEventEmitter();
 
+        eventEmitter.on(EventType.SET_CUE_POINT, new EventListener() {
+            @Override
+            public void processEvent(Event event) {
+                Log.v(TAG, "Set Cuepoint: "+event.toString());
+            }
+        });
+
+        eventEmitter.on(EventType.CUE_POINT, new EventListener() {
+            @Override
+            public void processEvent(Event event) {
+                int playheadPosition = event.getIntegerProperty(Event.PLAYHEAD_POSITION);
+                Log.v(TAG, "Got a CuePoint at " + playheadPosition);
+            }
+        });
+
         // Use a procedural abstraction to setup the Google IMA SDK via the plugin.
         setupGoogleIMA();
 
@@ -150,26 +165,30 @@ public class MainActivity extends BrightcovePlayer {
     private void setupAdMarkers(BaseVideoView videoView,Video video) {
         final BrightcoveMediaController mediaController = new BrightcoveMediaController(brightcoveVideoView);
         Map<String,Object> details = new HashMap<>();
+        Map<String,Object> properties = new HashMap<>();
 
         // Add "Ad Markers" where the video says ads will appear.
         cuePoints = video.getCuePoints();
+        CuePoint cuepoint;
         for (int i = 0; i < cuePoints.size(); i++ ) {
-            CuePoint cuepoint = cuePoints.get(i);
-            int position = cuepoint.getPosition();
+            int position = cuePoints.get(i).getPosition();
+
+            Log.v(TAG, " Video Cuepoint position : " + position + " Video CuePoint type: " + cuePoints.get(i).getType());
+
+            if (position == 0) {
+                cuepoint = new CuePoint(CuePoint.PositionType.BEFORE, "AD", properties);
+            } else if (position == video.getDuration()) {
+                cuepoint = new CuePoint(CuePoint.PositionType.AFTER, "AD", properties);
+            } else {
+                cuepoint = new CuePoint(position, "AD", properties);
+            }
+
             BrightcoveSeekBar brightcoveSeekBar = mediaController.getBrightcoveSeekBar();
             // If cuepoint is negative it means it is a POST ROLL.
             int markerTime = position < 0 ? brightcoveSeekBar.getMax() : (position);
             mediaController.getBrightcoveSeekBar().addMarker(markerTime);
-            details.put(EventType.SET_CUE_POINT, cuepoint);
-            eventEmitter.on(EventType.CUE_POINT, new EventListener() {
-                @Override
-                public void processEvent(Event event) {
-
-                    int playheadPosition = event.getIntegerProperty(Event.PLAYHEAD_POSITION);
-                    Log.v(TAG, "Got a CuePoint at " + playheadPosition);
-                }
-            });
-            eventEmitter.emit(EventType.CUE_POINT, details);
+            details.put(EventType.CUE_POINT, cuepoint);
+            eventEmitter.emit(EventType.SET_CUE_POINT, details);
         }
 
         videoView.setMediaController(mediaController);
